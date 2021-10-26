@@ -81,7 +81,7 @@ class Blockchain {
 
             let check_chain = await self.validateChain();
 
-            if(check_chain){
+            if(check_chain.length == 0){
 
                 self.chain.push(block);
 
