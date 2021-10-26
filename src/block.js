@@ -42,10 +42,13 @@ class Block {
             
             let chain_hash = self.hash;
 
+            self.hash = null;
+
             let validation_hash = SHA256(JSON.stringify(self)).toString();
 
             if (chain_hash == validation_hash){
 
+                self.hash = chain_hash
                 resolve(true)
             }
 
@@ -61,7 +64,7 @@ class Block {
             // Returning the Block is not valid            
             // Returning the Block is valid
 
-        });
+        })
     }
 
     /**

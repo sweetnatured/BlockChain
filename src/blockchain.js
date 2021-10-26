@@ -75,19 +75,29 @@ class Blockchain {
                 block.previousBlockHash = self.chain[self.height].hash;
             }
 
-            block.timeStamp = new Date().getTime().toString().slice(0,-3);
+            block.time = new Date().getTime().toString().slice(0,-3);
 
             block.hash =  SHA256(JSON.stringify(block)).toString();
 
-            self.chain.push(block);
+            let check_chain = await self.validateChain();
 
-            resolve(block)
+            if(check_chain){
 
-            console.log(block);
+                self.chain.push(block);
 
-            self.height = self.height + 1;
+                resolve(block);
 
+                console.log(block);
 
+                self.height = self.height + 1;
+
+            }
+
+            else{
+
+                reject(Error("The Chain is broken... Couldn't add new chain"));
+            
+            }
            
         }).catch(error => {
             console.error(error)
@@ -135,11 +145,15 @@ class Blockchain {
         
         return new Promise(async (resolve, reject) => {
 
-            let time = parseInt(message.split(':')[1]);
+            let messageTime = parseInt(message.split(':')[1]);
             let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
             
+            console.log(messageTime);
+            console.log(currentTime);
+            console.log(currentTime - messageTime);
+            console.log(Math.floor((currentTime - messageTime) / 60))
 
-            if( (currentTime - time) < (99995*60) )
+            if( (Math.floor((currentTime - messageTime) / 60)) < (5*600))
             {
                 let verify = bitcoinMessage.verify(message, address, signature);
                
@@ -238,11 +252,8 @@ class Blockchain {
                 console.log(blockData)
                 console.log(blockData.data.owner);
                
-
                 var adress1 = blockData.data.owner;
                 
-
-
                 if(adress1 === address)
                 {
                     console.log("2")
@@ -251,14 +262,11 @@ class Blockchain {
                     console.log(stars); 
                 }
 
-
-
             })
-
           
             resolve(stars);
             console.log("resolve etti");
-        });
+        })
     }
 
     /**
@@ -274,7 +282,7 @@ class Blockchain {
 
             self.chain.slice(1).forEach(async block => {
 
-                validation =  await block.validate();
+                let validation =  await block.validate();
 
                 if(validation == false)
                 {
@@ -287,12 +295,13 @@ class Blockchain {
                 }
 
             })
+
+            resolve(errorLog);
             
         }).catch(error => {
             console.error(error)
           });
-
-        resolve(errorLog);
+   
     }
 
 }
