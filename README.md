@@ -2,7 +2,7 @@
 
 
 
-## How to test your application functionalities?
+## How to test application functionalities?
 
 To test the application I recommend you to use POSTMAN, this tool will help you to make the requests to the API.
 
